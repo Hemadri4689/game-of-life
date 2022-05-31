@@ -7,7 +7,7 @@ pipeline {
     stages{
         stage ('gitclone') {
             steps {
-                    git "https://github.com/Hemadri4689/game-of-life.git"
+                   checkout scm
                 }
 		}
         stage ("maven build") {

@@ -1,20 +1,21 @@
-pipeline {
-    agent any
-     tools {
-         jdk 'java 8'
-         maven 'maven3.3.9'
-         }
-    stages{
-        stage ('gitclone') {
+  pipeline {
+        agent none
+        stages {
+          stage("build & SonarQube analysis") {
+            agent any
             steps {
-                   checkout scm
-                }
-		}
-        stage ("maven build") {
-            steps {
-                         sh 'mvn install'
-                  }
-                 }
-               }
+              withSonarQubeEnv('My SonarQube Server') {
+                sh 'mvn clean package sonar:sonar'
+              }
+            }
           }
+          stage("Quality Gate") {
+            steps {
+              timeout(time: 1, unit: 'HOURS') {
+                waitForQualityGate abortPipeline: true
+              }
+            }
+          }
+        }
+      }
 
